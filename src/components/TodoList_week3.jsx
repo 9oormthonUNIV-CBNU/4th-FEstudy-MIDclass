@@ -84,13 +84,23 @@ const TodoApp = () => {
     { id: 1, title: "입력해주세요", completed: false },
   ]);
 
-  // ✅ 항목 추가 함수 (Date.now()로 고유 id 만들기)
-  //const addTodo
+  // 항목 추가 함수
+  const addTodo = () => {
+    const newTodo = {
+      id: Date.now(),
+      title: "새로운 할 일",
+      completed: false,
+    };
+    setTodos([...todos, newTodo]);
+  };
 
-  // 항목 삭제 함수 (filter 사용)
-  //const deleteTodo
+  // 항목 삭제 함수
+  const deleteTodo = (id) => {
+    const updatedTodos = todos.filter((todo) => todo.id !== id);
+    setTodos(updatedTodos);
+  };
 
-  // 완료 토글 함수 (map + 삼항 연산자 사용)
+  // 완료 토글 함수
   const toggleCompleted = (id) => {
     const updatedTodos = todos.map((todo) =>
       todo.id === id ? { ...todo, completed: !todo.completed } : todo
@@ -98,34 +108,36 @@ const TodoApp = () => {
     setTodos(updatedTodos);
   };
 
-  // 렌더링되는 todos 배열을 콘솔에 출력해서 확인
-  console.log("Current todos:", todos);
-
   return (
     <TodoListWrapper>
-      {/* ✅ 항목 추가 버튼 (onClick 핸들링) */}
-      <AddButton>+</AddButton>
+      {/* 항목 추가 버튼 */}
+      <AddButton onClick={addTodo}>+</AddButton>
 
-      {/* 리스트 반복 렌더링 (map 사용 + key 지정 필수) */}
+      {/* 리스트 반복 렌더링 */}
       {todos.map((todo) => (
         <Item key={todo.id} completed={todo.completed}>
-          {/* ✅ 삭제 버튼 (e.stopPropagation(), onClick 핸들링) */}
+          {/* 삭제 버튼 */}
           <DeleteButton
             onClick={(e) => {
               e.stopPropagation();
+              deleteTodo(todo.id);
             }}
           >
             ✕
           </DeleteButton>
 
-          {/* ✅ 텍스트 영역 : title이 뜨도록 수정 */}
-          <TextBlock completed="---">
-            <div className="title">{"---"}</div>
-            {/* ✅조건부 렌더링: completed가 true일 때만 메시지 출력 */}
+          {/* 텍스트 영역 */}
+          <TextBlock completed={todo.completed}>
+            <div className="title">{todo.title}</div>
+            {todo.completed && <div className="completed-msg">완료됨</div>}
           </TextBlock>
 
-          {/* ✅ 체크박스: checked 속성 + onChange 이벤트 처리 */}
-          <input type="checkbox" checked="---" />
+          {/* 체크박스 */}
+          <input
+            type="checkbox"
+            checked={todo.completed}
+            onChange={() => toggleCompleted(todo.id)}
+          />
         </Item>
       ))}
     </TodoListWrapper>
