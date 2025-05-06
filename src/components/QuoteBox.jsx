@@ -1,4 +1,4 @@
-import React, { /* useState, useEffect를 import 하세요 */ } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 
 const QuoteWrapper = styled.div`
@@ -35,15 +35,19 @@ const fetchQuote = async (setQuote, setAuthor) => {
 
 const QuoteBox = () => {
   // 1. 명언과 작가를 저장할 상태를 선언하세요
-
+  const [quote, setQuote] = useState("")
+  const [author, setAuthor] = useState("")
+  
 
   // 2. useEffect를 사용하여 컴포넌트가 마운트될 때 fetchQuote를 실행하세요
- 
+  useEffect(()=>{
+    fetchQuote(setQuote, setAuthor)
+  },[])
 
   return (
     <QuoteWrapper>
-      “{/* 명언을 출력하세요 */}”
-      <Author>- {/* 작가 이름을 출력하세요 */}</Author>
+      “{quote}”
+      <Author>- {author}</Author>
     </QuoteWrapper>
   );
 };
