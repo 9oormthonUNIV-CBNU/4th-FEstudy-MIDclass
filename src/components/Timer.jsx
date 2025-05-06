@@ -1,4 +1,4 @@
-import React, { /* 여기에 필요한 Hook들을 import 하세요 */ } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import styled from "styled-components";
 
 const TimerWrapper = styled.div`
@@ -16,25 +16,34 @@ const TimeDisplay = styled.div`
   color: ${({ isDone }) => (isDone ? "#ff4d4f" : "#000")};
 `;
 
-
 const Timer = () => {
-  // 1. secondsLeft 상태값을 정의하세요 (초기값: 300)
+  const [secondsLeft, setSecondsLeft] = useState(300); // 5분
+  const intervalRef = useRef(null);
 
-  // 2. setInterval ID를 저장할 ref를 선언하세요
+  useEffect(() => {
+    intervalRef.current = setInterval(() => {
+      setSecondsLeft((prev) => {
+        if (prev <= 1) {
+          clearInterval(intervalRef.current);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
 
-  // 3. useEffect를 사용해 타이머를 시작하고,
-  //    시간이 0이 되면 멈추도록 로직을 작성하세요.
-	
-	const formatTime = (seconds) => {
-	  const m = String(Math.floor(seconds / 60)).padStart(2, "0");
-	  const s = String(seconds % 60).padStart(2, "0");
-	  return `${m}:${s}`;
-	};
-	
+    return () => clearInterval(intervalRef.current);
+  }, []);
+
+  const formatTime = (seconds) => {
+    const m = String(Math.floor(seconds / 60)).padStart(2, "0");
+    const s = String(seconds % 60).padStart(2, "0");
+    return `${m}:${s}`;
+  };
+
   return (
     <TimerWrapper>
-      <TimeDisplay isDone={/* secondsLeft가 0이면 true */}>
-        {/* secondsLeft가 0이면 "DONE!", 아니면 formatTime(secondsLeft) */}
+      <TimeDisplay isDone={secondsLeft === 0}>
+        {secondsLeft === 0 ? "DONE!" : formatTime(secondsLeft)}
       </TimeDisplay>
     </TimerWrapper>
   );
