@@ -80,56 +80,74 @@ const AddButton = styled.button`
 `;
 
 const TodoApp = () => {
-  const [todos, setTodos] = useState([
-    { id: 1, title: "입력해주세요", completed: false },
-  ]);
+	const [todos, setTodos] = useState([
+		{ id: 1, title: "입력해주세요", completed: false },
+	]);
 
-  // ✅ 항목 추가 함수 (Date.now()로 고유 id 만들기)
-  //const addTodo
+	// ✅ 항목 추가 함수 (Date.now()로 고유 id 만들기)
+	//const addTodo
+	const addTodo = () => {
+		const newTodo = {
+			id: Date.now(),
+			title: prompt("할 일을 입력하세요") || "새 할 일",
+			completed: false,
+		};
+		setTodos([...todos, newTodo]);
+	};
+	// 항목 삭제 함수 (filter 사용)
+	//const deleteTodo
+	const deleteTodo = (id) => {
+		const updated = todos.filter((todo) => todo.id !== id);
+		setTodos(updated);
+	};
 
-  // 항목 삭제 함수 (filter 사용)
-  //const deleteTodo
+	// 완료 토글 함수 (map + 삼항 연산자 사용)
+	const toggleCompleted = (id) => {
+		const updatedTodos = todos.map((todo) =>
+			todo.id === id ? { ...todo, completed: !todo.completed } : todo
+		);
+		setTodos(updatedTodos);
+	};
 
-  // 완료 토글 함수 (map + 삼항 연산자 사용)
-  const toggleCompleted = (id) => {
-    const updatedTodos = todos.map((todo) =>
-      todo.id === id ? { ...todo, completed: !todo.completed } : todo
-    );
-    setTodos(updatedTodos);
-  };
+	// 렌더링되는 todos 배열을 콘솔에 출력해서 확인
+	console.log("Current todos:", todos);
 
-  // 렌더링되는 todos 배열을 콘솔에 출력해서 확인
-  console.log("Current todos:", todos);
+	return (
+		<TodoListWrapper>
+			{/* ✅ 항목 추가 버튼 (onClick 핸들링) */}
+			<AddButton onClick={addTodo}>+</AddButton>
 
-  return (
-    <TodoListWrapper>
-      {/* ✅ 항목 추가 버튼 (onClick 핸들링) */}
-      <AddButton>+</AddButton>
+			{/* 리스트 반복 렌더링 (map 사용 + key 지정 필수) */}
+			{todos.map((todo) => (
+				<Item key={todo.id} completed={todo.completed}>
+					{/* ✅ 삭제 버튼 (e.stopPropagation(), onClick 핸들링) */}
+					<DeleteButton
+						onClick={(e) => {
+							e.stopPropagation();
+							deleteTodo(todo.id);
+						}}
+					>
+						✕
+					</DeleteButton>
 
-      {/* 리스트 반복 렌더링 (map 사용 + key 지정 필수) */}
-      {todos.map((todo) => (
-        <Item key={todo.id} completed={todo.completed}>
-          {/* ✅ 삭제 버튼 (e.stopPropagation(), onClick 핸들링) */}
-          <DeleteButton
-            onClick={(e) => {
-              e.stopPropagation();
-            }}
-          >
-            ✕
-          </DeleteButton>
+					{/* ✅ 텍스트 영역 : title이 뜨도록 수정 */}
+					<TextBlock completed={todo.completed}>
+						<div className="title">{todo.title}</div>
+						{/* ✅조건부 렌더링: completed가 true일 때만 메시지 출력 */}
+						{todo.completed && (
+							<div className="completed-msg">완료된 항목입니다.</div>
+						)}
+					</TextBlock>
 
-          {/* ✅ 텍스트 영역 : title이 뜨도록 수정 */}
-          <TextBlock completed="---">
-            <div className="title">{"---"}</div>
-            {/* ✅조건부 렌더링: completed가 true일 때만 메시지 출력 */}
-          </TextBlock>
-
-          {/* ✅ 체크박스: checked 속성 + onChange 이벤트 처리 */}
-          <input type="checkbox" checked="---" />
-        </Item>
-      ))}
-    </TodoListWrapper>
-  );
+					{/* ✅ 체크박스: checked 속성 + onChange 이벤트 처리 */}
+					<input type="checkbox"
+						checked={todo.completed}
+						onChange={() => toggleCompleted(todo.id)}
+					/>
+				</Item>
+			))}
+		</TodoListWrapper>
+	);
 };
 
 export default TodoApp;
