@@ -85,10 +85,20 @@ const TodoApp = () => {
   ]);
 
   // ✅ 항목 추가 함수 (Date.now()로 고유 id 만들기)
-  //const addTodo
+  const addTodo = () => {
+    const newTodo = {
+      id: Date.now(),
+      title: prompt("입력해주세요: ", "할 일"),
+      completed: false,
+    };
+    setTodos([...todos, newTodo]);
+  };
 
   // 항목 삭제 함수 (filter 사용)
-  //const deleteTodo
+  const deleteTodo = (id) => {
+    const updatedTodos = todos.filter((todo) => todo.id !== id);
+    setTodos(updatedTodos);
+  };
 
   // 완료 토글 함수 (map + 삼항 연산자 사용)
   const toggleCompleted = (id) => {
@@ -104,7 +114,7 @@ const TodoApp = () => {
   return (
     <TodoListWrapper>
       {/* ✅ 항목 추가 버튼 (onClick 핸들링) */}
-      <AddButton>+</AddButton>
+      <AddButton onClick={addTodo}>+</AddButton>
 
       {/* 리스트 반복 렌더링 (map 사용 + key 지정 필수) */}
       {todos.map((todo) => (
@@ -113,19 +123,21 @@ const TodoApp = () => {
           <DeleteButton
             onClick={(e) => {
               e.stopPropagation();
+              deleteTodo(todo.id);
             }}
           >
             ✕
           </DeleteButton>
 
           {/* ✅ 텍스트 영역 : title이 뜨도록 수정 */}
-          <TextBlock completed="---">
-            <div className="title">{"---"}</div>
+          <TextBlock completed={todo.completed}>
+            <div className="title">{todo.title}</div>
             {/* ✅조건부 렌더링: completed가 true일 때만 메시지 출력 */}
+            {todo.completed ? <div className="completed-msg">완료되었습니다!</div> : null}
           </TextBlock>
 
           {/* ✅ 체크박스: checked 속성 + onChange 이벤트 처리 */}
-          <input type="checkbox" checked="---" />
+          <input type="checkbox" checked={todo.completed} onChange={() => toggleCompleted(todo.id)} />
         </Item>
       ))}
     </TodoListWrapper>
